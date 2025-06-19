@@ -1,6 +1,6 @@
+// src/pages/Dashboard.tsx
 "use client";
 
-// src/pages/Dashboard.tsx
 import type React from "react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -16,26 +16,30 @@ import {
   User,
   Settings,
 } from "lucide-react";
+// Pastikan path relatif ini benar dari src/pages/Dashboard.tsx
 import { useLanguage } from "../contexts/LanguageContext";
 import { translations } from "../utils/translations";
 import { supabase } from "../api/supabaseClient";
 import { analyticsService } from "../services/analyticsService";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+// Impor dari alias @/
+import { cn } from "@/lib/utils"; // Path ini merujuk ke src/lib/utils.ts
+import { Button } from "@/components/ui/button"; // Path ini merujuk ke src/components/ui/button.tsx
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"; // Path ini merujuk ke src/components/ui/avatar.tsx
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Skeleton } from "@/components/ui/skeleton";
-import { ModeToggle } from "@/components/mode-toggle";
+} from "@/components/ui/dropdown-menu"; // Path ini merujuk ke src/components/ui/dropdown-menu.tsx
+import { Skeleton } from "@/components/ui/skeleton"; // Path ini merujuk ke src/components/ui/skeleton.tsx
+import { ModeToggle } from "@/components/mode-toggle"; // Path ini merujuk ke src/components/mode-toggle.tsx
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
-import AnalyticsCharts from "../components/AnalyticsCharts";
+import { useAuth } from "@/hooks/useAuth"; // Path ini merujuk ke src/hooks/useAuth.ts
+import AnalyticsCharts from "../components/AnalyticsCharts"; // Path relatif ini merujuk ke src/components/AnalyticsCharts.tsx
 
+// --- Interface Definitions (Tetap sama) ---
 interface UserGoal {
   id: string;
   title: string;
@@ -101,7 +105,7 @@ interface DashboardAnalyticsSummary {
 
 const Dashboard: React.FC = () => {
   const { language } = useLanguage();
-  const tOriginal = translations[language];
+  const tOriginal = translations[language]; // Ini sudah ada, tidak diubah
   const { t, i18n } = useTranslation();
   const { user, signOut } = useAuth();
   const navigate = useNavigate();

@@ -13,6 +13,8 @@ interface AuthUser {
   id: string;
   email: string | undefined;
   // Tambahkan properti user lainnya jika ada
+  // Anda mungkin perlu menambahkan 'name' dan 'image' jika digunakan di Dashboard.tsx
+  // Contoh: name?: string; image?: string;
 }
 
 interface AuthContextType {
@@ -33,37 +35,50 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (session) {
-          setUser({
-            id: session.user.id,
-            email: session.user.email,
-            // Inisialisasi properti user lainnya
-          });
-        } else {
-          setUser(null);
-        }
-        setLoading(false);
-      }
-    );
-
-    // Ambil sesi awal
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Perbaikan di sini: Ambil langsung objek 'subscription'
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session) {
+        // Sesuaikan dengan data user yang Anda butuhkan
         setUser({
           id: session.user.id,
           email: session.user.email,
-          // Inisialisasi properti user lainnya
+          // Jika Anda mengakses user?.name atau user?.image di komponen lain
+          // seperti Dashboard.tsx, pastikan data tersebut tersedia di session.user.user_metadata
+          // Contoh:
+          // name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0],
+          // image: session.user.user_metadata?.avatar_url,
+        });
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    // Ambil sesi awal untuk inisialisasi user saat komponen dimuat
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        // Sesuaikan dengan data user yang Anda butuhkan
+        setUser({
+          id: session.user.id,
+          email: session.user.email,
+          // Contoh:
+          // name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0],
+          // image: session.user.user_metadata?.avatar_url,
         });
       }
       setLoading(false);
     });
 
+    // Fungsi cleanup untuk menghentikan listener saat komponen di-unmount
     return () => {
-      authListener?.unsubscribe();
+      // Perbaikan di sini: Panggil unsubscribe pada objek subscription yang benar
+      if (subscription) {
+        subscription.unsubscribe();
+      }
     };
-  }, []);
+  }, []); // Dependensi array kosong agar effect hanya berjalan sekali saat mount dan cleanup saat unmount
 
   const signOut = async () => {
     await supabase.auth.signOut();

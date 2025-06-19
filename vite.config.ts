@@ -1,6 +1,8 @@
+// vite.config.ts
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
+import path from "path"; // <--- TAMBAHKAN INI
 
 export default defineConfig({
   plugins: [
@@ -11,44 +13,43 @@ export default defineConfig({
         "/assets/logo.png",
         "/apple-touch-icon.png",
         "robots.txt",
-        "/images/background.jpg", // Tambahkan gambar latar belakang jika ada
+        "/images/background.jpg",
         "/icon-192.png",
         "/icon-512.png",
       ],
       devOptions: {
-        enabled: true, // Untuk debugging di mode development
+        enabled: true,
       },
       workbox: {
-        // Strategi caching untuk offline mode
-        globPatterns: ["**/*.{js,css,html,png,jpg,svg}"], // Cache semua file JS, CSS, HTML, dan gambar
+        globPatterns: ["**/*.{js,css,html,png,jpg,svg}"],
         runtimeCaching: [
           {
             urlPattern: /\.(?:png|jpg|jpeg|svg|gif)$/,
-            handler: "CacheFirst", // Cache gambar dengan strategi CacheFirst
+            handler: "CacheFirst",
             options: {
               cacheName: "images",
               expiration: {
-                maxEntries: 50, // Batas cache untuk gambar
-                maxAgeSeconds: 30 * 24 * 60 * 60, // 30 hari
+                maxEntries: 50,
+                maxAgeSeconds: 30 * 24 * 60 * 60,
               },
             },
           },
           {
             urlPattern: /\.(?:js|css)$/,
-            handler: "StaleWhileRevalidate", // Cache JS dan CSS, tapi perbarui di background
+            handler: "StaleWhileRevalidate",
             options: {
               cacheName: "static-resources",
             },
           },
           {
             urlPattern: /^https:\/\/emranghanisahi\.netlify\.app\/.*/,
-            handler: "NetworkFirst", // Prioritaskan jaringan untuk halaman, fallback ke cache
+            handler: "NetworkFirst",
             options: {
               cacheName: "pages",
               networkTimeoutSeconds: 3,
               expiration: {
                 maxEntries: 10,
-                maxAgeSeconds: 7 * 24 * 60 * 60, // 7 hari
+                maxAgeSeconds: 7 * 24 * 60 * 60,
               },
             },
           },
@@ -80,6 +81,12 @@ export default defineConfig({
       },
     }),
   ],
+  resolve: {
+    // <--- TAMBAHKAN BLOK INI
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
   optimizeDeps: {
     exclude: ["lucide-react"],
   },
